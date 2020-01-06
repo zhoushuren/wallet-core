@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Cardano/Address.h"
-#include "Cardano/Signer.h"
+#include "Cardano/ShelleyAddress.h"
+//#include "Cardano/Signer.h"
 
 #include "HDWallet.h"
 #include "HexCoding.h"
@@ -14,11 +14,15 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Cardano;
+using namespace TW::CardanoShelley;
 using namespace std;
 
 
 TEST(CardanoAddress, Validation) {
+    // valid V3 address
+    ASSERT_TRUE(Address::isValid("addr1s3hdtrqgs47l7ue5srga8wmk9dzw279x9e7lxadalt6z0fk64nnn2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59j5lempe"));
+    ASSERT_TRUE(Address::isValid("addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j"));
+
     // valid V2 address
     ASSERT_TRUE(Address::isValid("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx"));
     ASSERT_TRUE(Address::isValid("Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
@@ -106,7 +110,7 @@ TEST(CardanoAddress, MnemonicToAddress) {
 
 TEST(CardanoAddress, KeyHash) {
     auto xpub = parse_hex("e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf69869272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000");
-    auto hash = Address::keyHash(xpub);
+    auto hash = TW::Cardano::Address::keyHash(xpub);
     ASSERT_EQ("a1eda96a9952a56c983d9f49117f935af325e8a6c9d38496e945faa8", hex(hash));
 }
 

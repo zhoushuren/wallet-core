@@ -15,6 +15,7 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Bravo/Address.h"
 #include "Cardano/Address.h"
+#include "Cardano/ShelleyAddress.h"
 #include "Cosmos/Address.h"
 #include "Decred/Address.h"
 #include "EOS/Address.h"
@@ -185,6 +186,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeCardano:
         return Cardano::Address::isValid(string);
+
+    case TWCoinTypeCardanoShelley:
+        return CardanoShelley::Address::isValid(string);
     }
 }
 
@@ -323,6 +327,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeCardano:
         return Cardano::Address(publicKey).string();
+
+    case TWCoinTypeCardanoShelley:
+        return CardanoShelley::Address(publicKey).string();
     }
 }
 
