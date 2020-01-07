@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
-#include "Address.h"
+#include "AddressV2.h"
 #include "../Cbor.h"
 #include "../Crc.h"
 #include "../Data.h"
@@ -183,7 +183,7 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Tr
         inputsArray.addIndefArrayElem(
             Encode::array({
                 Encode::uint(0), // type
-                Encode::tag(Address::PayloadTag, Encode::bytes(outPointData))
+                Encode::tag(AddressV2::PayloadTag, Encode::bytes(outPointData))
             })
         );
     }
@@ -191,7 +191,7 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Tr
 
     // outputs array
     auto outputsArray = Encode::indefArray();
-    Address toAddr = Address(input.to_address());
+    AddressV2 toAddr = AddressV2(input.to_address());
     outputsArray.addIndefArrayElem(
         Encode::array({
             Encode::fromRaw(toAddr.getCborData()),
@@ -199,7 +199,7 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Tr
         })
     );
     if (plan.change() != 0) {
-        Address changeAddr = Address(input.change_address());
+        AddressV2 changeAddr = AddressV2(input.change_address());
         outputsArray.addIndefArrayElem(
             Encode::array({
                 Encode::fromRaw(changeAddr.getCborData()),
@@ -226,7 +226,7 @@ Proto::SigningOutput Signer::prepareSignedTx(const Proto::SigningInput& input, c
     for (int i = 0; i < input.private_key_size(); ++i) {
         PrivateKey fromPri = PrivateKey(input.private_key(i));
         PublicKey fromPub = fromPri.getPublicKey(TWPublicKeyTypeED25519Extended);
-        string address = Address(fromPub).string();
+        string address = AddressV2(fromPub).string();
         priKeysByAddr[address] = input.private_key(i);
     }
 
@@ -251,7 +251,7 @@ Proto::SigningOutput Signer::prepareSignedTx(const Proto::SigningInput& input, c
         signatures.push_back(
             Encode::array({
                 Encode::uint(0), // type
-                Encode::tag(Address::PayloadTag,
+                Encode::tag(AddressV2::PayloadTag,
                     Encode::bytes(signatureCbor)
                 ),
             })

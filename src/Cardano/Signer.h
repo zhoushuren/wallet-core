@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Address.h"
+#include "AddressV2.h"
 #include "../proto/Cardano.pb.h"
 #include "../Data.h"
 #include "../PublicKey.h"

@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Cardano/Signer.h"
-#include "Cardano/Address.h"
+#include "Cardano/AddressV2.h"
 #include "proto/Cardano.pb.h"
 
 #include "HexCoding.h"
@@ -359,7 +359,7 @@ TEST(CardanoSigner, PrepareUnsignedTx_d498) {
         "835610e371e632d829eb63bf44ec39d0487c19d4d98b8dce9dd88d88414ce5bb1ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f",
         hex(fromPubKey.bytes)
     );
-    Address fromAddr = Address(fromPubKey);
+    AddressV2 fromAddr = AddressV2(fromPubKey);
     EXPECT_EQ("Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx", fromAddr.string());
 }
 

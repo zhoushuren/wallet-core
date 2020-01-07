@@ -6,16 +6,16 @@
 
 #pragma once
 
-#include "Address.h"
+#include "AddressV2.h"
 #include "Data.h"
 #include "../PublicKey.h"
 
 #include <string>
 
-namespace TW::CardanoShelley {
+namespace TW::Cardano {
 
 /// A Cardano-Shelley address, V3 or V2.
-class Address {
+class AddressV3 {
   public:
     enum Discrimination: uint8_t {
         Discrim_Production = 0,
@@ -42,40 +42,51 @@ class Address {
     Data groupKey;
 
     /// Used in case of legacy address (V2)
-    TW::Cardano::Address* legacyAddress;
+    TW::Cardano::AddressV2* legacyAddressV2;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& addr);
 
+    /// Create a single spending key address
+    static AddressV3 createSingle(Discrimination discrimination_in, const TW::Data& spendingKey);
+    /// Create a group address
+    static AddressV3 createGroup(Discrimination discrimination_in, const TW::Data& spendingKey, const TW::Data& groupKey);
+    /// Create an account address
+    static AddressV3 createAccount(Discrimination discrimination_in, const TW::Data& accountKey);
+
     /// Initializes a Cardano address with a string representation.  Throws if invalid.
-    explicit Address(const std::string& addr);
+    explicit AddressV3(const std::string& addr);
 
     /// Initializes a V2, public key type Cardano address from an extended public key.
-    explicit Address(const PublicKey& publicKey);
+    explicit AddressV3(const PublicKey& publicKey);
 
-    ~Address() {
-        if (legacyAddress != nullptr) {
-            delete legacyAddress;
+    ~AddressV3() {
+        if (legacyAddressV2 != nullptr) {
+            delete legacyAddressV2;
         }
     }
 
-    /// Returns a string representation of the address.
+    /// Returns the Bech string representation of the address, with default HRP.
     std::string string() const;
-
-    /// compute hash of public key, for address root
-    static TW::Data keyHash(const TW::Data& xpub);
+    /// Returns the Bech string representation of the address, with given HRP.
+    std::string string(const std::string& hrp) const;
+    /// Returns the internal Base32 string representation of the address.
+    std::string stringBase32() const;
 
     /// Check validity and parse elements of a string address.  Throws on error. Used internally by isValid and ctor.
     static bool parseAndCheckV3(const std::string& addr, Discrimination& discrimination, Kind& kind, TW::Data& key1, TW::Data& key2);
+
+private:
+    AddressV3() : legacyAddressV2(nullptr) {}
 };
 
-inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const AddressV3& lhs, const AddressV3& rhs) {
     return lhs.discrimination == rhs.discrimination && lhs.kind == rhs.kind && lhs.key1 == rhs.key1 && lhs.groupKey == rhs.groupKey;
 }
 
-} // namespace TW::CardanoShelley
+} // namespace TW::Cardano
 
 /// Wrapper for C interface.
-struct TWCardanoShelleyAddress {
-    TW::CardanoShelley::Address impl;
+struct TWCardanoAddressV3 {
+    TW::Cardano::AddressV3 impl;
 };

@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../Cardano/Address.h"
+#include "../Cardano/AddressV2.h"
 
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWCardanoAddress.h>
@@ -18,13 +18,13 @@ bool TWCardanoAddressEqual(struct TWCardanoAddress *_Nonnull lhs, struct TWCarda
 
 bool TWCardanoAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    return Address::isValid(*s);
+    return AddressV2::isValid(*s);
 }
 
 struct TWCardanoAddress *_Nullable TWCardanoAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
     try {
-        const auto address = Address(*s);
+        const auto address = AddressV2(*s);
         return new TWCardanoAddress{ std::move(address) };
     } catch (...) {
         return nullptr;
@@ -32,7 +32,7 @@ struct TWCardanoAddress *_Nullable TWCardanoAddressCreateWithString(TWString *_N
 }
 
 struct TWCardanoAddress *_Nonnull TWCardanoAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    return new TWCardanoAddress{ Address(publicKey->impl) };
+    return new TWCardanoAddress{ AddressV2(publicKey->impl) };
 }
 
 void TWCardanoAddressDelete(struct TWCardanoAddress *_Nonnull address) {
