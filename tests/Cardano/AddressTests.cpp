@@ -33,7 +33,9 @@ TEST(CardanoAddress, Validation) {
     ASSERT_TRUE(AddressV3::isValid("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
     ASSERT_TRUE(AddressV3::isValid("DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di"));
 
-    // invalid checksum
+    // invalid checksum V3
+    ASSERT_FALSE(AddressV3::isValid("PREFIX1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s"));
+    // invalid checksum V2
     ASSERT_FALSE(AddressV3::isValid("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm"));
     // random
     ASSERT_FALSE(AddressV3::isValid("hasoiusaodiuhsaijnnsajnsaiussai"));
@@ -41,7 +43,7 @@ TEST(CardanoAddress, Validation) {
     ASSERT_FALSE(AddressV3::isValid(""));
 }
 
-TEST(CardanoAddress, FromString) {
+TEST(CardanoAddress, FromStringV2) {
     {
         auto address = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
         ASSERT_EQ(address.string(), "Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
@@ -49,6 +51,28 @@ TEST(CardanoAddress, FromString) {
     {
         auto address = AddressV3("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ");
         ASSERT_EQ(address.string(), "DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ");
+    }
+}
+
+TEST(CardanoAddress, FromStringV3) {
+    {
+        // single addr
+        auto address = AddressV3("ca1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s");
+        EXPECT_EQ(address.string("ca"), "ca1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s");
+        EXPECT_EQ(address.string("ca"), "ca1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s");
+        EXPECT_EQ(AddressV3::Discrim_Production, address.discrimination);
+        EXPECT_EQ(AddressV3::Kind_Single, address.kind);
+        EXPECT_EQ("0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20", hex(address.key1));
+        EXPECT_EQ("", hex(address.groupKey));
+    }
+    {
+        // group addr
+        auto address = AddressV3("addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j");
+        EXPECT_EQ(address.string(), "addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j");
+        EXPECT_EQ(AddressV3::Discrim_Test, address.discrimination);
+        EXPECT_EQ(AddressV3::Kind_Group, address.kind);
+        EXPECT_EQ("4dc3393959139f00bc88d33d4b2582fecc237238f2269fc094b286acdb892295", hex(address.key1));
+        EXPECT_EQ("6d0b99fdb1cc851fbc8dbcb7d6710fde28df46360c259d482db679c24c4e50b2", hex(address.groupKey));
     }
 }
 
@@ -243,9 +267,9 @@ TEST(CardanoAddress, PrivateKeyExtended) {
     ASSERT_EQ(32, publicKeyNonext.bytes.size());
 }
 
-TEST(CardanoAddress, FromStringNegativeInvalidStringV2) {
+TEST(CardanoAddress, FromStringNegativeInvalidString) {
     try {
-        auto address = AddressV2("__INVALID_ADDRESS__");
+        auto address = AddressV3("__INVALID_ADDRESS__");
     } catch (...) {
         return;
     }
@@ -254,7 +278,7 @@ TEST(CardanoAddress, FromStringNegativeInvalidStringV2) {
 
 TEST(CardanoAddress, FromStringNegativeBadChecksumV2) {
     try {
-        auto address = AddressV2("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm");
+        auto address = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm");
     } catch (...) {
         return;
     }

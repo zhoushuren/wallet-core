@@ -35,7 +35,7 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, Discrimination& discrim
     if (conv.size() != 33 && conv.size() != 65) {
         return false;
     }
-    discrimination = (Discrimination)(conv[0] & 0b10000000);
+    discrimination = (Discrimination)((conv[0] & 0b10000000) >> 7);
     kind = (Kind)(conv[0] & 0b01111111);
     if (kind <= Kind_Sentinel_Low || kind >= Kind_Sentinel_High) {
         return false;
@@ -60,7 +60,6 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, Discrimination& discrim
             key2 = Data(32);
             std::copy(conv.begin() + 1, conv.begin() + 33, key1.begin());
             std::copy(conv.begin() + 33, conv.begin() + 65, key2.begin());
-        cerr << hex(key1) << endl << hex(key2) << endl;
             return true;
 
         default:
