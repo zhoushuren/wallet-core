@@ -77,7 +77,6 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     auto unspentSelector = UnspentSelector(feeCalculator);
 
     auto dest_output_count = 1 + input.extra_outputs_size();
-
     bool maxAmount = input.use_max_amount();
     if (maxAmount && dest_output_count > 1) {
         // MaxAmount is not compatible with multiple outputs (not possible to know how to distribute max available amount)

@@ -1212,6 +1212,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     unsignedData.clear();
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
     EXPECT_EQ(unsignedData.size(), 254);
+    // https://blockchair.com/litecoin/transaction/9e3fe98565a904d2da5ec1b3ba9d2b3376dfc074f43d113ce1caac01bf51b34c
     EXPECT_EQ(hex(unsignedData), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
